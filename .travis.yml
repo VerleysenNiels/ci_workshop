@@ -21,7 +21,7 @@ before_install:
   - export PATH=$PATH:$PWD/geckodriver
 
 script:
-  - nosetests --with-cov --cov-config ../.coveragerc
+  - nosetests --with-cov --cov-config .coveragerc --cov ci_workshop/tests
 
 after_success:
   - codecov
