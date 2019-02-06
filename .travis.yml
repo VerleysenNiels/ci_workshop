@@ -1,0 +1,39 @@
+sudo: true
+language: python
+python: 
+  - "3.6"
+  - "nightly"
+
+env:
+  - MOZ_HEADLESS=1
+
+addons:
+  firefox: latest
+
+install: 
+  - pip install -r requirements/dev.txt
+
+before_install:
+  - wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+  - mkdir geckodriver
+  - tar -xzf geckodriver-v0.24.0-linux64.tar.gz -C geckodriver
+  - sudo chmod +x $PWD/geckodriver/geckodriver
+  - export PATH=$PATH:$PWD/geckodriver
+
+script:
+  - nosetests --with-cov --cov-config .coveragerc
+
+after_success:
+  - codecov
+                        
+jobs:
+  include:
+    - stage: Deploy
+      script: skip
+      deploy:
+        provider: heroku
+        api_key:
+          secure: k68wtJwNtWRNjlNggILOCsjv1As5gCFN/7K3BwmByhXuhyvoJZ00IxxYyxuK5og2C2/R1gCdaLTHzXvlNw6P1NeuvhAHNY3tYqRvOcbfL7MM/suUpXiYnA5ukte7RYfwgrUYwPl16LfQXHhVrekzVthSy69dpnhIUQgQcSpYR9emZ5OhBg4qtfAAtZRDEyVwf7RREMZTFWK820x/Pup6L6fdDKSJoE7D2bJSBCTEFGhZ3cJv3iADe/6e3qtKiu5DcmjSMM8t2jr0fZZJ+m0cHByw7vkXGPfrmL9jQHht+Q4GHhw5DTIdRObmiQpEcJ7r2kBLmJ57zMFKozdc9rQiPOLfGrwqbzisdsdbUoKpqYSaiiNOGPSR1Vzk2OHbwrgrXc6K54dlQgdViGsw0BgvI2qH7UjIfiImiDTyrhRyDS5AINXJG+Q4pTbm2mTU6Z68yLw1Bs/g0GtkcGzS/INXlhkyOiIL4TrAAqhCGKSfFd4zn+nETASieeaa/xBB9eSqCzPGXjvprclVJt2/FWgCMm8e99O1ze+9pB5tuFgzqMUDqadfTLRyGPjLKDs35PcUXg/P9WJMhOmDU5bSZyCp9NfhvRySnhcMNvH9Zd5aFSSDZbOVUO428Qlvd5L7taG5ChwqYMQe7+jBySDpL1Hf0Xot6cD4Riznsos22uPZWwo=
+        app: ci_workshop
+        on: 
+          repo: VerleysenNiels/ci_workshop
